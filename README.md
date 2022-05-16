@@ -1,5 +1,5 @@
 # devops-netology
-
+#####
 # Благодаря .gitignore будут игнорироваться:
 # Содержимое всех директорий .terraform
 # Файлы tfstate
