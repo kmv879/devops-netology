@@ -1,42 +1,23 @@
-﻿1. git show aefea\
-   Полный хэш aefead2207ef7e2aa5dc81a34aedf0cad4c32545\
-   Комментарий Update CHANGELOG.md
-2. git show 85024d3\
-   Коммит соответствует тегу v0.12.23
-3. git show b8d720\
-   Коммит - результат мерджа 56cd7859e и  9ea88f22f\
-   Родители коммита:\
-56cd7859e05c36c06b56d013b55a252d0bb7e158\
-9ea88f22fc6269854151c571162c5bcf958bee2b
-4. git log v0.12.23..v0.12.24 --oneline\
-Коммиты между тегами v0.12.23 и v0.12.24:\
-b14b74c49 [Website] vmc provider links \
-3f235065b Update CHANGELOG.md\
-6ae64e247 registry: Fix panic when server is unreachable\
-5c619ca1b website: Remove links to the getting started guide's old location\
-06275647e Update CHANGELOG.md\
-d5f9411f5 command: Fix bug when using terraform login on Windows\
-4b6d06cc5 Update CHANGELOG.md\
-dd01a3507 Update CHANGELOG.md\
-225466bc3 Cleanup after v0.12.23 release
-5. git log -S "func providerSource("\
-Функция создана в коммите 8c928e83589d90a031f811fae52a81be7153e82f
-6. Поиск коммита и файла, в котором функция определена\
-git log -S "func globalPluginDirs("\
-Поиск коммитов с изменением функции\
-git log -L :globalPluginDirs:plugins.go\
-Функция была изменена в коммитах:\
-78b122055 Remove config.go and update things using its aliases\
-52dbf9483 keep .terraform.d/plugins for discovery\
-41ab0aef7 Add missing OS_ARCH dir to global plugin paths\
-66ebff90c move some more plugin search path logic to command\
-8364383c3 Push plugin discovery down into command package (Создана)
-7. Автор функции Martin Atkins <mart@degeneration.co.uk>\
-Поиск коммита и файла, в котором функция определена\
-git log -S "func synchronizedWriters("\
-Автор коммита - автор функции.\
-Тот же результат дает переход на этот коммит\
-git checkout 5ac311e2a91e381e2f52234668b49ba670aa0fe5\
-и\
-git blame synchronized_writers.go\
-5ac311e2a9 (Martin Atkins 2017-05-03 16:25:41 -0700 15) func synchronizedWriters(targets ...io.Writer) []io.Writer {
+﻿Занятие 3.1
+
+5. Виртуальной машине выделено: 2 процессора, 1ГБ ОЗУ, жесткий диск 64 ГБ, видеопамять 4 Мб
+6. Объем оперативной памяти, ресурсы процессора можно изменить в файле Vagrantfile\
+	config.vm.provider "virtualbox" do |v|\
+	    v.memory = 2048  
+		v.cpus = 4\
+	end
+	
+8.1. Длина журнала history задается переменной HISTSIZE в файле .bashrc в домашнем каталоге пользователя. В мануале bash описывается на 733 строке.
+8.2. Директива ignoreboth соответсвует ignorespace и ignoredups. При ее указании в историю не сохраняются команды с пробелом в начале и дубликаты команд.
+
+9. {} применяются для задания списка в сценарии, выполняющемсяв текущем окружении. Строка 230 мануала bash
+10. 100000 файлов создается командой touch {1..100000}. При попытке создания более 147058 файлов выводится сообщение об ошибке: Список аргументов слишком большой
+11. Конструкция возвращает 1, если есть каталог /tmp и 0 в противном случае
+12. vagrant@vagrant:~/tem$ mkdir /tmp/new_path_directory\
+	vagrant@vagrant:~/tem$ cp /bin/bash /tmp/new_path_directory/\
+	vagrant@vagrant:~/tem$ PATH=/tmp/new_path_directory:$PATH\
+	vagrant@vagrant:~/tem$ type -a bash\
+	bash is /tmp/new_path_directory/bash\
+	bash is /usr/bin/bash\
+	bash is /bin/bash
+13. Команда at выполняет задачу в указанное время. Команда batch выполняет задачу, когда уровень загрузки системы будет ниже 1.5
