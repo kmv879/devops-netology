@@ -1,48 +1,49 @@
-﻿Занятие 3.2
+﻿Занятие 3.3
 
-1. cd - встроенная команда.  
-vagrant@vagrant:~$ type cd  
-cd is a shell builtin  
-Встроенные команды выполняются в текущей оболочке. Если бы команда cd была внешней, она выполнялась бы в в дочерней оболочке, и при возврате к текущей оболочке смены каталога не произошло.
+1. vagrant@vagrant:~$ strace /bin/bash -c 'cd /tmp' 2>&1 | grep tmp  
+execve("/bin/bash", ["/bin/bash", "-c", "cd /tmp"], 0x7ffc31cf2fa0 /* 23 vars */) = 0  
+newfstatat(AT_FDCWD, "/tmp", {st_mode=S_IFDIR|S_ISVTX|0777, st_size=4096, ...}, 0) = 0  
+chdir("/tmp")  
+Команда cd делает системный вызов chdir()
 
-2. Команда grep <some_string> <some_file> | wc -l выводит на экран количество вхождений строки в файл. Аналог grep <some_string> <some_file> -c
+2. vagrant@vagrant:~$ strace file /bin/bash 2>&1 | grep open  
+openat(AT_FDCWD, "/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3  
+openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libmagic.so.1", O_RDONLY|O_CLOEXEC) = 3  
+openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3  
+openat(AT_FDCWD, "/lib/x86_64-linux-gnu/liblzma.so.5", O_RDONLY|O_CLOEXEC) = 3  
+openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libbz2.so.1.0", O_RDONLY|O_CLOEXEC) = 3  
+openat(AT_FDCWD, "/lib/x86_64-linux-gnu/libz.so.1", O_RDONLY|O_CLOEXEC) = 3  
+openat(AT_FDCWD, "/usr/lib/locale/locale-archive", O_RDONLY|O_CLOEXEC) = 3  
+openat(AT_FDCWD, "/etc/magic.mgc", O_RDONLY) = -1 ENOENT (No such file or directory)  
+openat(AT_FDCWD, "/etc/magic", O_RDONLY) = 3  
+openat(AT_FDCWD, "/usr/share/misc/magic.mgc", O_RDONLY) = 3  
+openat(AT_FDCWD, "/usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache", O_RDONLY) = 3  
+openat(AT_FDCWD, "/bin/bash", O_RDONLY|O_NONBLOCK|O_CLOEXEC) = 3  
+База данных команды file хранится в  /usr/share/misc/magic.mgc. /etc/magic пустой. Остальные файлы - системные библиотеки и кэш.
 
-3. Процесс systemd(1)
+3. Узнать файловый дескриптор удаленного файла sudo lsof -p < PID> | grep deleted. Затем >/proc/< PID>/fd/< дескриптор>. Содержимое файла удаляется, но его размер, выдаваемый командой lsof продолжает расти, поэтому не понятен смысл данного действия.
 
-4. ls [аргументы] 2>/dev/pts/1
+4. Зомби-процессы не занимают памяти, но блокируют записи в таблице процессов, размер которой ограничен для каждого пользователя и системы в целом.
 
-5. cat <file.in >file.out
+5. Список открытых файлов за 1 секунду  работы утилиты можно вывести командой sudo strace opensnoop-bpfcc -d 1 2>&1 | grep openat
 
-6. Вывести получится командой echo string > /dev/tty[номер]. Наблюдать вывод можно переключившись в режим терминала.
+6. Команда uname -a использует системный вызов uname()  
+Цитата из man:  
+Part of the utsname information is also accessible via /proc/sys/kernel/{ostype, hostname, osrelease, version, domainname}.
 
-7. Первая команда создала файловый дескриптор 5 и перенаправила его на стандартный вывод. Вторая команда вывела строку в этот файловый дескриптор и, соответст венно, далее на стандартный вывод
+7. ; разделяет команды, которые выполняются последовательно. В случае && следующая команда выполняется только в случае успешного выполнения предыдущей.   
+set -e обеспечивает немедленный выход, если выполняемая команда вернула ненулевой результат. В данном случае смысла в && нет.  
 
-8. vagrant@vagrant:~$ ls 1 git 4>&2 2>&1 1>&4 | egrep "such"  
-git:  
-devops-netology  
-ls: cannot access '1': No such file or directory  
+8. Опции bash set -euxo pipefail  
+-e завершает работу скрипта, если команда выполняется с ошибкой  
+-o pipefail позволяет проверить, что все команды в конвейере выполнились без ошибок. Без этой опции возращается результат выполнения последней команды конвейера  
+-u завершает работу скрипта, если используемая в нем переменная не определена  
+-x обеспечивает вывод выполняемой команды на стандартный вывод  
+Параметры -euo прерывают работу скрипта при возникновении ошибок, а параметр -x полезен при отладке.  
 
-9. Команда выведет переменные окружения текущего процесса. Переменные окружения можно еще вывести командой printenv
-
-10. В файле /proc/< PID>/cmdline хранится полная командная строка процесса < PID>  
-	/proc/< PID>/exe - символьная ссылка на исполняемый файл процесса < PID>
-	
-11. cat /proc/cpuinfo | grep sse
-	Последняя версия SSE4_2 и SSE4a(AMD) (AMD Ryzen 5 3500U)
-	
-12. По умолчанию при выполнении команды с помощью ssh на удаленном компьютере не создается псевдотерминал tty. Поэтому команда tty возвращает ошибку. Для создания tty команда запускается в виде:
-ssh -t localhost 'tty'
-
-13.  vagrant@vagrant:~$ tty  
-/dev/pts/0  
-vagrant@vagrant:~$ ps a  
-    PID TTY      STAT   TIME COMMAND  
-    673 tty1     Ss+    0:00 /sbin/agetty -o -p -- \u --noclear tty1 linux  
-   1026 pts/0    Ss     0:00 -bash  
-   1076 pts/1    Ss     0:00 -bash  
-   1085 pts/1    S+     0:00 top  
-   1089 pts/0    R+     0:00 ps a  
-vagrant@vagrant:~$ sudo reptyr -T 1085  
-
-14. Команда tee производит чтение со стандартного ввода и записывает полученные данные в файл и на стандартный вывод. Данный вариант будет работать, потому что команда tee запущена с повышенными привилегиями и в данном случае имеет доступ в /root/.
-Первоначальный вариант получится выполнить, если его запустить в виде sudo sh -c 'echo string > /root/new_file'
+9. vagrant@vagrant:~$ ps -o stat  
+STAT  
+Ss  
+R+  
+S - спящий прерываемый процесс  
+R - выполняющийся процесс  
