@@ -1,141 +1,213 @@
-﻿Домашнее задание 3.8
+﻿Домашнее задание 3.9
 
-1. 
-```
-vagrant@vagrant:~$ dig @resolver4.opendns.com myip.opendns.com +short
-178.129.132.20
+1. Скриншот установленного плагина Bitwarden с сохраненным паролем находится в файле bitwarden.png
 
-route-views>sh ip route 178.129.132.20 255.255.255.255
-Routing entry for 178.129.0.0/16
-  Known via "bgp 6447", distance 20, metric 0
-  Tag 2497, type external
-  Last update from 202.232.0.2 7w0d ago
-  Routing Descriptor Blocks:
-  * 202.232.0.2, from 202.232.0.2, 7w0d ago
-      Route metric is 0, traffic share count is 1
-      AS Hops 3
-      Route tag 2497
-      MPLS label: none
+2. Скриншот настроек OTP находится в файле bitwarden-otp.jpg. Использовалось приложение Яндекс.ключ
+
+3. Создание самоподписанного сертификата в nginx
+
 ```
-Команда `sh bgp 178.129.132.20 255.255.255.255` не работает.
-```
-route-views>sh bgp 178.129.132.20 255.255.255.255
-% Network not in table	  
-```
-Отображает только для сети 178.129.0.0/16
-```
-route-views>sh bgp 178.129.132.20
-BGP routing table entry for 178.129.0.0/16, version 281622940
-Paths: (24 available, best #22, table default)
-  Not advertised to any peer
-  Refresh Epoch 1
-  20912 3257 1273 12389 28812
-    212.66.96.126 from 212.66.96.126 (212.66.96.126)
-      Origin IGP, localpref 100, valid, external
-      Community: 3257:8070 3257:30352 3257:50001 3257:53900 3257:53902 20912:65004
-      path 7FE0DB205788 RPKI State not found
-      rx pathid: 0, tx pathid: 0
-  Refresh Epoch 1
-  3333 1103 12389 28812
-    193.0.0.56 from 193.0.0.56 (193.0.0.56)
-      Origin IGP, localpref 100, valid, external
-      path 7FE11C9B0300 RPKI State not found
-      rx pathid: 0, tx pathid: 0
-  Refresh Epoch 1
-  4901 6079 1299 12389 28812
-    162.250.137.254 from 162.250.137.254 (162.250.137.254)
-      Origin IGP, localpref 100, valid, external
-      Community: 65000:10100 65000:10300 65000:10400
-      path 7FE16AAA57F0 RPKI State not found
-      rx pathid: 0, tx pathid: 0
+root@vagrant:/home/vagrant# mkdir /etc/nginx/ssl
+root@vagrant:/home/vagrant# chown root:root /etc/nginx/ssl
+root@vagrant:/home/vagrant# chmod 700 /etc/nginx/ssl
+root@vagrant:/home/vagrant# cd /etc/nginx/ssl
+root@vagrant:/etc/nginx/ssl# openssl req -new -x509 -days 9999 -nodes -newkey rsa:2048 -out cert.pem -keyout cert.key
+Generating a RSA private key
+.....+++++
+..............+++++
+writing new private key to 'cert.key'
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [AU]:RU
+State or Province Name (full name) [Some-State]:
+Locality Name (eg, city) []:Ufa
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:SomeCompany
+Organizational Unit Name (eg, section) []:UnitName
+Common Name (e.g. server FQDN or YOUR name) []:example.com
+Email Address []:mail@example.com
 ```
 
-2. Создание dummy интерфейса
+Внесение изменений в файл `/etc/nginx/nginx.conf`
 ```
-/etc/systemd/network/dummy0.netdev
+        ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3; # Dropping SSLv3, ref: POO>
+        ssl_prefer_server_ciphers on;
+        ssl_certificate /etc/nginx/ssl/cert.pem;
+        ssl_certificate_key /etc/nginx/ssl/cert.key;
 ```
+Внесение изменений в файл `/etc/nginx/sites-enabled/default`
 ```
-[NetDev]
-   Name=dummy0
-   Kind=dummy
-```
-```
-/etc/systemd/network/dummy0.network
-```
-```
-[Match]
-   Name=dummy0
-
-[Network]
-   Address=10.1.10.2/32
-```
-```
-vagrant@vagrant:~$ ip a
-1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
-    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-    inet 127.0.0.1/8 scope host lo
-       valid_lft forever preferred_lft forever
-    inet6 ::1/128 scope host
-       valid_lft forever preferred_lft forever
-2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
-    link/ether 08:00:27:b1:28:5d brd ff:ff:ff:ff:ff:ff
-    inet 10.0.2.15/24 brd 10.0.2.255 scope global dynamic eth0
-       valid_lft 86045sec preferred_lft 86045sec
-    inet6 fe80::a00:27ff:feb1:285d/64 scope link
-       valid_lft forever preferred_lft forever
-3: dummy0: <BROADCAST,NOARP,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN group default qlen 1000
-    link/ether 1a:70:2e:84:6a:3c brd ff:ff:ff:ff:ff:ff
-    inet 10.1.10.2/32 scope global dummy0
-       valid_lft forever preferred_lft forever
-    inet6 fe80::1870:2eff:fe84:6a3c/64 scope link
-       valid_lft forever preferred_lft forever
+        listen 443 ssl default_server;
+        listen [::]:443 ssl default_server;
 ```
 
-Настройка статических маршрутов
-```
-/etc/netplan/01-netcfg.yaml
-```
-```
-network:
-  version: 2
-  ethernets:
-    eth0:
-       dhcp4: true
-       routes:
-          - to: 10.10.1.0/24
-            via: 192.168.12.1
-            on-link: true
-          - to: 10.20.1.0/24
-            via: 192.168.12.1
-            on-link: true
-```
-```
-vagrant@vagrant:~$ ip r
-default via 10.0.2.2 dev eth0 proto dhcp src 10.0.2.15 metric 100
-10.0.2.0/24 dev eth0 proto kernel scope link src 10.0.2.15
-10.0.2.2 dev eth0 proto dhcp scope link src 10.0.2.15 metric 100
-10.10.1.0/24 via 192.168.12.1 dev eth0 proto static onlink
-10.20.1.0/24 via 192.168.12.1 dev eth0 proto static onlink
-```
+Скриншот работы сайта по https находится в файле nginx.png
 
- 3. Просмотр открытых TCP портов
+5. Проверка сайта на TLS уязвимости
+```
+vagrant@vagrant:~/git/testssl.sh$ ./testssl.sh -U --sneaky https://netology.ru
+
+###########################################################
+    testssl.sh       3.1dev from https://testssl.sh/dev/
+    (88e80d2 2022-07-02 22:13:06)
+
+      This program is free software. Distribution and
+             modification under GPLv2 permitted.
+      USAGE w/o ANY WARRANTY. USE IT AT YOUR OWN RISK!
+
+       Please file bugs @ https://testssl.sh/bugs/
+
+###########################################################
+
+ Using "OpenSSL 1.0.2-chacha (1.0.2k-dev)" [~183 ciphers]
+ on vagrant:./bin/openssl.Linux.x86_64
+ (built: "Jan 18 17:12:17 2019", platform: "linux-x86_64")
+
+
+ Start 2022-07-27 15:42:38        -->> 188.114.98.160:443 (netology.ru) <<--
+
+ Further IP addresses:   2a06:98c1:3123:a000::
+ rDNS (188.114.98.160):  --
+ Service detected:       HTTP
+
+
+ Testing vulnerabilities
+
+ Heartbleed (CVE-2014-0160)                not vulnerable (OK), no heartbeat extension
+ CCS (CVE-2014-0224)                       not vulnerable (OK)
+ Ticketbleed (CVE-2016-9244), experiment.  not vulnerable (OK)
+ ROBOT                                     not vulnerable (OK)
+ Secure Renegotiation (RFC 5746)           supported (OK)
+ Secure Client-Initiated Renegotiation     not vulnerable (OK)
+ CRIME, TLS (CVE-2012-4929)                not vulnerable (OK)
+ BREACH (CVE-2013-3587)                    potentially NOT ok, "gzip" HTTP compression detected. - only supplied "/" tested
+                                           Can be ignored for static pages or if no secrets in the page
+ POODLE, SSL (CVE-2014-3566)               not vulnerable (OK)
+ TLS_FALLBACK_SCSV (RFC 7507)              Downgrade attack prevention supported (OK)
+ SWEET32 (CVE-2016-2183, CVE-2016-6329)    VULNERABLE, uses 64 bit block ciphers
+ FREAK (CVE-2015-0204)                     not vulnerable (OK)
+ DROWN (CVE-2016-0800, CVE-2016-0703)      not vulnerable on this host and port (OK)
+                                           make sure you don't use this certificate elsewhere with SSLv2 enabled services, see
+                                           https://search.censys.io/search?resource=hosts&virtual_hosts=INCLUDE&q=A3C7D9A8D3805171D99EA61F5C80B8ADF49B93BA21EBB492D78512BA254E90A5
+ LOGJAM (CVE-2015-4000), experimental      not vulnerable (OK): no DH EXPORT ciphers, no DH key detected with <= TLS 1.2 BEAST (CVE-2011-3389)                     TLS1: ECDHE-RSA-AES128-SHA AES128-SHA ECDHE-RSA-AES256-SHA AES256-SHA
+                                                 DES-CBC3-SHA
+                                           VULNERABLE -- but also supports higher protocols  TLSv1.1 TLSv1.2 (likely mitigated)
+ LUCKY13 (CVE-2013-0169), experimental     potentially VULNERABLE, uses cipher block chaining (CBC) ciphers with TLS. Check patches
+ Winshock (CVE-2014-6321), experimental    not vulnerable (OK)
+ RC4 (CVE-2013-2566, CVE-2015-2808)        no RC4 ciphers detected (OK)
+
+
+ Done 2022-07-27 15:43:19 [  44s] -->> 188.114.98.160:443 (netology.ru) <<--
  ```
- vagrant@vagrant:~$ sudo ss -tlpn
-State    Recv-Q   Send-Q      Local Address:Port       Peer Address:Port   Process
-LISTEN   0        4096        127.0.0.53%lo:53              0.0.0.0:*       users:(("systemd-resolve",pid=628,fd=13))
-LISTEN   0        128               0.0.0.0:22              0.0.0.0:*       users:(("sshd",pid=700,fd=3))
-LISTEN   0        128                  [::]:22                 [::]:*       users:(("sshd",pid=700,fd=4))
+ 
+ 6. Генерирование SSH ключа
+  ```
+ vagrant@vagrant:~/.ssh$ ssh-keygen -t rsa
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/vagrant/.ssh/id_rsa):
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /home/vagrant/.ssh/id_rsa
+Your public key has been saved in /home/vagrant/.ssh/id_rsa.pub
+The key fingerprint is:
+SHA256:TNumvX0lbnCSIZ8vw0VOUXIAzFG3/bCT95/NRDNM8Ug vagrant@vagrant
+The key's randomart image is:
++---[RSA 3072]----+
+|           oo+E++|
+|            o..==|
+|        .     o+o|
+|       o o. . =+.|
+|        S oo B+++|
+|         +  * =+=|
+|        . .. B oo|
+|           o+ =o+|
+|          . .= .+|
++----[SHA256]-----+
 ```
-Порт 53 используется службой DNS, порт 22 SSH
 
-4. Просмотр используемых сокетов UDP
+Копирование ключа на сервер
 ```
-vagrant@vagrant:~$ sudo ss -ulpn
-State    Recv-Q   Send-Q      Local Address:Port       Peer Address:Port   Process
-UNCONN   0        0           127.0.0.53%lo:53              0.0.0.0:*       users:(("systemd-resolve",pid=628,fd=12))
-UNCONN   0        0          10.0.2.15%eth0:68              0.0.0.0:*       users:(("systemd-network",pid=1155,fd=22))
+vagrant@vagrant:~/.ssh$ ssh-copy-id vagrant@192.168.1.70
+/usr/bin/ssh-copy-id: INFO: Source of key(s) to be installed: "/home/vagrant/.ssh/id_rsa.pub"
+The authenticity of host '192.168.1.70 (192.168.1.70)' can't be established.
+ECDSA key fingerprint is SHA256:RztZ38lZsUpiN3mQrXHa6qtsUgsttBXWJibL2nAiwdQ.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? y
+Please type 'yes', 'no' or the fingerprint: yes
+/usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
+/usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
+vagrant@192.168.1.70's password:
+
+Number of key(s) added: 1
+
+Now try logging into the machine, with:   "ssh 'vagrant@192.168.1.70'"
+and check to make sure that only the key(s) you wanted were added.
 ```
- 53 - DNS, 68 - DHCP
- 
- 
- 5. Схема сети в приложенном файле network.jpg
+
+Подключение к серверу
+```
+vagrant@vagrant:~/.ssh$ ssh 'vagrant@192.168.1.70'
+Welcome to Ubuntu 20.04.3 LTS (GNU/Linux 5.4.0-91-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+  System information as of Wed 27 Jul 2022 03:53:16 PM UTC
+
+  System load:  0.0                Processes:             137
+  Usage of /:   12.4% of 30.88GB   Users logged in:       1
+  Memory usage: 23%                IPv4 address for eth0: 192.168.1.70
+  Swap usage:   0%
+
+
+This system is built by the Bento project by Chef Software
+More information can be found at https://github.com/chef/bento
+Last login: Wed Jul 27 08:13:05 2022 from 192.168.1.49
+```
+
+7. Переименование ключей
+```
+vagrant@vagrant:~/.ssh$ mv id_rsa my_rsa
+vagrant@vagrant:~/.ssh$ mv id_rsa.pub my_rsa.pub
+```
+Создание файла `~/.ssh/config`
+```
+Host my_ubuntu
+User vagrant
+HostName 192.168.1.70
+Port 22
+IdentityFile ~/.ssh/my_rsa
+```
+Подключение по имени
+```
+vagrant@vagrant:~/.ssh$ ssh my_ubuntu
+Welcome to Ubuntu 20.04.3 LTS (GNU/Linux 5.4.0-91-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+  System information as of Wed 27 Jul 2022 04:03:14 PM UTC
+
+  System load:  0.0                Processes:             135
+  Usage of /:   12.4% of 30.88GB   Users logged in:       1
+  Memory usage: 23%                IPv4 address for eth0: 192.168.1.70
+  Swap usage:   0%
+
+
+This system is built by the Bento project by Chef Software
+More information can be found at https://github.com/chef/bento
+Last login: Wed Jul 27 16:00:47 2022 from 192.168.1.49
+```
+7. Захват 100 пакетов трафика
+
+```
+sudo tcpdump -w 0001.pcap -i eth0 -c 100
+```
+
+Скриншот файла 0001.cap, открытого в Wireshark, находится в файле wireshark.png
