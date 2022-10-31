@@ -184,6 +184,14 @@ postgres@a90c3fe73cbd:/$ pg_dump test_database > /var/lib/postgresql/backups/tes
 Как бы вы доработали бэкап-файл, чтобы добавить уникальность значения столбца `title` для таблиц `test_database`?
 
 Добавить в файле резервной копии к типу столбца 'title' UNIQUE. 
+```
+CREATE TABLE public.orders_tmp (
+    id integer NOT NULL,
+    title character varying(80) NOT NULL UNIQUE,
+    price integer DEFAULT 0
+);
+```
+Пример восстановления базы данных из резервной копии и добавления записи с уже существующим значением в поле title.
 
 ```
 postgres@a90c3fe73cbd:/$ createdb newdb
