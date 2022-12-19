@@ -218,6 +218,7 @@ Note: You didn't use the -out option to save this plan, so Terraform can't guara
 if you run "terraform apply" now.
 ```
 
+Cвой образ AMI можно создать про помощи утилиты Packer
 
 
 ---
