@@ -1,0 +1,21 @@
+---
+vector_version: "0.27.0"
+vector_config:
+  sources:
+    sample_logs:
+      type: file
+      read_from: beginning
+      acknowledgements: null
+      ignore_older_secs: 600
+      include:
+        - /var/log/**/*.log
+  sinks:
+    to_clickhouse:
+      type: clickhouse
+      inputs:
+        - sample_logs
+      database: logs
+      endpoint: 'http://192.168.1.52:8123'
+      table: log
+      compression: gzip
+
