@@ -1,0 +1,110 @@
+---
+- name: Install Clickhouse
+  hosts: clickhouse
+  become: true
+  become_user: root
+  remote_user: centos
+  handlers:
+    - name: Start clickhouse service
+      ansible.builtin.service:
+        name: clickhouse-server
+        state: restarted
+  tasks:
+    - block:
+        - name: Get clickhouse distrib
+          ansible.builtin.get_url:
+            url: "https://packages.clickhouse.com/rpm/stable/{{ item }}-{{ clickhouse_version }}.noarch.rpm"
+            dest: "/tmp/{{ item }}-{{ clickhouse_version }}.rpm"
+          with_items: "{{ clickhouse_packages }}"
+      rescue:
+        - name: Get clickhouse distrib
+          ansible.builtin.get_url:
+            url: "https://packages.clickhouse.com/rpm/stable/clickhouse-common-static-{{ clickhouse_version }}.x86_64.rpm"
+            dest: "/tmp/clickhouse-common-static-{{ clickhouse_version }}.rpm"
+    - name: Install clickhouse packages
+      ansible.builtin.yum:
+        name:
+          - /tmp/clickhouse-common-static-{{ clickhouse_version }}.rpm
+          - /tmp/clickhouse-client-{{ clickhouse_version }}.rpm
+          - /tmp/clickhouse-server-{{ clickhouse_version }}.rpm
+      notify: Start clickhouse service
+    - name: Flush handlers
+      meta: flush_handlers
+    - name: Wait for port 9000 to become open on the host, don't start checking for 10 seconds
+      wait_for:
+        port: 9000
+        delay: 10
+    - name: Create database
+      ansible.builtin.command: "clickhouse-client -q 'create database {{ clickhouse_database_name }};'"
+      register: create_db
+      failed_when: create_db.rc != 0 and create_db.rc !=82
+      changed_when: create_db.rc == 0
+    - name: Create log table
+      ansible.builtin.command:
+        argv:
+          - clickhouse-client
+          - --database
+          - "{{ clickhouse_database_name }}"
+          - -q
+          - "{{ clickhouse_create_table }}"
+      register: create_table
+      failed_when: create_table.rc != 0 and create_table.rc !=57 # table already exists
+      changed_when: create_table.rc == 0
+- name: Install Vector
+  hosts: vector
+  become: true
+  become_user: root
+  remote_user: centos
+  handlers:
+    - name: Start Vector service
+      ansible.builtin.service:
+        name: vector
+        state: restarted
+  tasks:
+    - name: Get vector distrib
+      ansible.builtin.get_url:
+        url: "https://packages.timber.io/vector/{{ vector_version }}/vector-{{ vector_version }}-1.x86_64.rpm"
+        dest: "/tmp/vector-{{ vector_version }}.rpm"
+    - name: Install vector package
+      ansible.builtin.yum:
+        name:
+          - /tmp/vector-{{ vector_version }}.rpm
+    - name: Create vector config
+      ansible.builtin.copy:
+        dest: /etc/vector/config.yaml
+        content: "{{ vector_config | to_nice_yaml(indent=2) }}"
+        mode: u=rw,g=r,o=r
+      notify: Start Vector service
+    - name: Flush handlers
+      meta: flush_handlers
+- name: Install lighthouse
+  hosts: lighthouse
+  become: true
+  become_user: root
+  remote_user: centos
+  handlers:
+    - name: Start nginx service
+      ansible.builtin.service:
+        name: nginx
+        state: restarted
+  tasks:
+    - name: Install packages
+      ansible.builtin.yum:
+        name:
+          - epel-release
+          - git
+    - name: Install nginx
+      become: true
+      ansible.builtin.yum:
+        name:
+          - nginx
+    - name: clone lighthouse repo
+      ansible.builtin.git:
+        repo: https://github.com/VKCOM/lighthouse.git
+        dest: /usr/share/nginx/html/lighthouse
+        clone: true
+        update: true
+        version: master
+      notify: Start nginx service
+    - name: Flush handlers
+      meta: flush_handlers
