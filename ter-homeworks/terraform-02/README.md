@@ -72,7 +72,7 @@ commands will detect it and remind you to do so if necessary.
 ```
 5. Ответьте, что означает ```preemptible = true``` и ```core_fraction``` в параметрах ВМ? Как это может пригодится в процессе обучения? Ответ в документации Yandex cloud.
 
-![Запущенная ВМ](/img/1.png "Запущенная ВМ")
+![Запущенная ВМ](/ter-homeworks/terraform-02/img/1.png "Запущенная ВМ")
 
 В качестве решения приложите:
 - скриншот ЛК Yandex Cloud с созданной ВМ,
