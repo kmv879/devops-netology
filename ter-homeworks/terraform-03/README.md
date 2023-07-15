@@ -189,5 +189,5 @@ ${i["name"]}   ansible_host=${i["network_interface"][0]["nat_ip_address"]}
 ```
 2. Выполните код. Приложите скриншот получившегося файла.
 
-![Inventory file](/ter-homeworks/terraform-03/img/security.png "Inventory file")
+![Inventory file](/ter-homeworks/terraform-03/img/inventory.png "Inventory file")
 
