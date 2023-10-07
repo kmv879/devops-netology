@@ -2,20 +2,20 @@
 
 Workflow для задач с типом bug
 
-![Workflow для задач с типом bug](./bug.png "Workflow для задач с типом bug")
+![Workflow для задач с типом bug](./src/bug.png "Workflow для задач с типом bug")
 
 
 Workflow для остальных задач.
 
-![Workflow для остальных задач](./other.png "Workflow для остальных задач")
+![Workflow для остальных задач](./src/other.png "Workflow для остальных задач")
 
 Доска Kanban.
 
-![Доска Kanban](./kanban.png "Доска Kanban")
+![Доска Kanban](./src/kanban.png "Доска Kanban")
 
 Результат выполнения спринта.
 
-![Результат выполнения спринта](./sprint.png "Результат выполнения спринта")
+![Результат выполнения спринта](./src/sprint.png "Результат выполнения спринта")
 
 
 
