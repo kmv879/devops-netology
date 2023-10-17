@@ -1,0 +1,16 @@
+pipeline {
+    agent any
+    stages {
+        stage('Git') {
+            steps{
+                git branch: 'main', url: 'https://github.com/kmv879/vector-role.git'
+            }
+        }
+        stage('Molecule test'){
+            steps{
+                sh 'molecule test'
+                cleanWs()
+            }
+        }
+    }
+}
