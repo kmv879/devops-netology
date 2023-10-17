@@ -55,7 +55,7 @@ Declarative Pipeline  Job запускает `molecule test` роли [vector-ro
 ![Multibranch Pipeline вывод консоли](./src/multibranch_con.png "Multibranch Pipeline вывод консоли")
 
 
-5. Создать Scripted Pipeline, наполнить его скриптом из [pipeline](./pipeline).
+5. Создать Scripted Pipeline, наполнить его скриптом.
 6. Внести необходимые изменения, чтобы Pipeline запускал `ansible-playbook` без флагов `--check --diff`, если не установлен параметр при запуске джобы (prod_run = True), по умолчанию параметр имеет значение False и запускает прогон с флагами `--check --diff`.
 
 ![Scripted Pipeline](./src/scripted.png "Scripted Pipeline")
