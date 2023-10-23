@@ -1,0 +1,203 @@
+Running with gitlab-runner 16.4.1 (d89a789a)
+  on runner.ru-central1.internal cjyPLmiX2, system ID: s_d6526167c347
+Preparing the "docker" executor
+00:10
+Using Docker executor with image docker:latest ...
+Starting service docker:dind ...
+Pulling docker image docker:dind ...
+Using docker image sha256:114405a05c1ea1579eada94100ea1262ec351ce96625fed47684ed05ef48f52f for docker:dind with digest docker@sha256:0752ca4e936da012c173c119217c0f9599b3b191c1557e53206d5d06d2627580 ...
+Waiting for services to be up and running (timeout 30 seconds)...
+Pulling docker image docker:latest ...
+Using docker image sha256:114405a05c1ea1579eada94100ea1262ec351ce96625fed47684ed05ef48f52f for docker:latest with digest docker@sha256:0752ca4e936da012c173c119217c0f9599b3b191c1557e53206d5d06d2627580 ...
+Preparing environment
+00:00
+Running on runner-cjyplmix2-project-1-concurrent-0 via runner.ru-central1.internal...
+Getting source from Git repository
+00:01
+Fetching changes with git depth set to 20...
+Reinitialized existing Git repository in /builds/root/netology/.git/
+Checking out 4eab1c8e as detached HEAD (ref is main)...
+Skipping Git submodules setup
+Executing "step_script" stage of the job script
+01:05
+Using docker image sha256:114405a05c1ea1579eada94100ea1262ec351ce96625fed47684ed05ef48f52f for docker:latest with digest docker@sha256:0752ca4e936da012c173c119217c0f9599b3b191c1557e53206d5d06d2627580 ...
+$ echo "build and push image..."
+build and push image...
+$ docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+WARNING! Using --password via the CLI is insecure. Use --password-stdin.
+WARNING! Your password will be stored unencrypted in /root/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+Login Succeeded
+$ docker build -t $CI_REGISTRY/crp2hc85uact046g650j/hello:gitlab-$CI_COMMIT_SHORT_SHA .
+#0 building with "default" instance using docker driver
+#1 [internal] load .dockerignore
+#1 transferring context: 2B done
+#1 DONE 0.2s
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 313B done
+#2 DONE 0.2s
+#3 [internal] load metadata for docker.io/library/centos:7
+#3 DONE 1.8s
+#4 [internal] load build context
+#4 transferring context: 635B done
+#4 DONE 0.0s
+#5 [1/6] FROM docker.io/library/centos:7@sha256:be65f488b7764ad3638f236b7b515b3678369a5124c47b8d32916d6487418ea4
+#5 resolve docker.io/library/centos:7@sha256:be65f488b7764ad3638f236b7b515b3678369a5124c47b8d32916d6487418ea4 0.1s done
+#5 sha256:be65f488b7764ad3638f236b7b515b3678369a5124c47b8d32916d6487418ea4 1.20kB / 1.20kB done
+#5 sha256:dead07b4d8ed7e29e98de0f4504d87e8880d4347859d839686a31da35a3b532f 529B / 529B done
+#5 sha256:eeb6ee3f44bd0b5103bb561b4c16bcb82328cfe5809ab675bb17ab3a16c517c9 2.75kB / 2.75kB done
+#5 sha256:2d473b07cdd5f0912cd6f1a703352c82b512407db6b05b43f2553732b55df3bc 0B / 76.10MB 0.2s
+#5 sha256:2d473b07cdd5f0912cd6f1a703352c82b512407db6b05b43f2553732b55df3bc 14.68MB / 76.10MB 0.3s
+#5 sha256:2d473b07cdd5f0912cd6f1a703352c82b512407db6b05b43f2553732b55df3bc 22.02MB / 76.10MB 0.4s
+#5 sha256:2d473b07cdd5f0912cd6f1a703352c82b512407db6b05b43f2553732b55df3bc 35.65MB / 76.10MB 0.5s
+#5 sha256:2d473b07cdd5f0912cd6f1a703352c82b512407db6b05b43f2553732b55df3bc 63.96MB / 76.10MB 0.7s
+#5 sha256:2d473b07cdd5f0912cd6f1a703352c82b512407db6b05b43f2553732b55df3bc 76.10MB / 76.10MB 0.9s
+#5 extracting sha256:2d473b07cdd5f0912cd6f1a703352c82b512407db6b05b43f2553732b55df3bc
+#5 sha256:2d473b07cdd5f0912cd6f1a703352c82b512407db6b05b43f2553732b55df3bc 76.10MB / 76.10MB 1.4s done
+#5 extracting sha256:2d473b07cdd5f0912cd6f1a703352c82b512407db6b05b43f2553732b55df3bc 3.3s done
+#5 DONE 5.4s
+#6 [2/6] RUN yum install python3 python3-pip -y
+#6 0.655 Loaded plugins: fastestmirror, ovl
+#6 0.907 Determining fastest mirrors
+#6 1.551  * base: mirror.yandex.ru
+#6 1.552  * extras: mirror.yandex.ru
+#6 1.552  * updates: mirrors.datahouse.ru
+#6 7.659 Resolving Dependencies
+#6 7.660 --> Running transaction check
+#6 7.660 ---> Package python3.x86_64 0:3.6.8-19.el7_9 will be installed
+#6 7.666 --> Processing Dependency: python3-libs(x86-64) = 3.6.8-19.el7_9 for package: python3-3.6.8-19.el7_9.x86_64
+#6 7.801 --> Processing Dependency: python3-setuptools for package: python3-3.6.8-19.el7_9.x86_64
+#6 7.802 --> Processing Dependency: libpython3.6m.so.1.0()(64bit) for package: python3-3.6.8-19.el7_9.x86_64
+#6 7.803 ---> Package python3-pip.noarch 0:9.0.3-8.el7 will be installed
+#6 7.804 --> Running transaction check
+#6 7.804 ---> Package python3-libs.x86_64 0:3.6.8-19.el7_9 will be installed
+#6 7.813 --> Processing Dependency: libtirpc.so.1()(64bit) for package: python3-libs-3.6.8-19.el7_9.x86_64
+#6 7.815 ---> Package python3-setuptools.noarch 0:39.2.0-10.el7 will be installed
+#6 7.815 --> Running transaction check
+#6 7.815 ---> Package libtirpc.x86_64 0:0.2.4-0.16.el7 will be installed
+#6 7.894 --> Finished Dependency Resolution
+#6 7.899 
+#6 7.899 Dependencies Resolved
+#6 7.902 
+#6 7.902 ================================================================================
+#6 7.902  Package                  Arch         Version              Repository     Size
+#6 7.902 ================================================================================
+#6 7.902 Installing:
+#6 7.902  python3                  x86_64       3.6.8-19.el7_9       updates        70 k
+#6 7.902  python3-pip              noarch       9.0.3-8.el7          base          1.6 M
+#6 7.902 Installing for dependencies:
+#6 7.902  libtirpc                 x86_64       0.2.4-0.16.el7       base           89 k
+#6 7.902  python3-libs             x86_64       3.6.8-19.el7_9       updates       6.9 M
+#6 7.902  python3-setuptools       noarch       39.2.0-10.el7        base          629 k
+#6 7.902 
+#6 7.902 Transaction Summary
+#6 7.902 ================================================================================
+#6 7.902 Install  2 Packages (+3 Dependent packages)
+#6 7.902 
+#6 7.902 Total download size: 9.3 M
+#6 7.902 Installed size: 48 M
+#6 7.902 Downloading packages:
+#6 8.006 Public key for libtirpc-0.2.4-0.16.el7.x86_64.rpm is not installed
+#6 8.006 warning: /var/cache/yum/x86_64/7/base/packages/libtirpc-0.2.4-0.16.el7.x86_64.rpm: Header V3 RSA/SHA256 Signature, key ID f4a80eb5: NOKEY
+#6 8.034 Public key for python3-3.6.8-19.el7_9.x86_64.rpm is not installed
+#6 8.202 --------------------------------------------------------------------------------
+#6 8.203 Total                                               31 MB/s | 9.3 MB  00:00     
+#6 8.204 Retrieving key from file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+#6 8.208 Importing GPG key 0xF4A80EB5:
+#6 8.208  Userid     : "CentOS-7 Key (CentOS 7 Official Signing Key) <security@centos.org>"
+#6 8.208  Fingerprint: 6341 ab27 53d7 8a78 a7c2 7bb1 24c6 a8a7 f4a8 0eb5
+#6 8.208  Package    : centos-release-7-9.2009.0.el7.centos.x86_64 (@CentOS)
+#6 8.208  From       : /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+#6 8.768 Running transaction check
+#6 8.781 Running transaction test
+#6 8.811 Transaction test succeeded
+#6 8.811 Running transaction
+#6 9.129   Installing : libtirpc-0.2.4-0.16.el7.x86_64                               1/5 
+#6 10.14   Installing : python3-setuptools-39.2.0-10.el7.noarch                      2/5 
+#6 23.13   Installing : python3-pip-9.0.3-8.el7.noarch                               3/5 
+#6 23.23   Installing : python3-3.6.8-19.el7_9.x86_64                                4/5 
+#6 24.94   Installing : python3-libs-3.6.8-19.el7_9.x86_64                           5/5 
+#6 25.00   Verifying  : libtirpc-0.2.4-0.16.el7.x86_64                               1/5 
+#6 25.05   Verifying  : python3-libs-3.6.8-19.el7_9.x86_64                           2/5 
+#6 25.09   Verifying  : python3-3.6.8-19.el7_9.x86_64                                3/5 
+#6 25.11   Verifying  : python3-setuptools-39.2.0-10.el7.noarch                      4/5 
+#6 25.14   Verifying  : python3-pip-9.0.3-8.el7.noarch                               5/5 
+#6 25.23 
+#6 25.23 Installed:
+#6 25.23   python3.x86_64 0:3.6.8-19.el7_9        python3-pip.noarch 0:9.0.3-8.el7       
+#6 25.23 
+#6 25.23 Dependency Installed:
+#6 25.23   libtirpc.x86_64 0:0.2.4-0.16.el7                                              
+#6 25.23   python3-libs.x86_64 0:3.6.8-19.el7_9                                          
+#6 25.23   python3-setuptools.noarch 0:39.2.0-10.el7                                     
+#6 25.23 
+#6 25.24 Complete!
+#6 DONE 29.6s
+#7 [3/6] COPY requirements.txt requirements.txt
+#7 DONE 0.2s
+#8 [4/6] RUN pip3 install -r requirements.txt
+#8 0.597 WARNING: Running pip install with root privileges is generally not a good idea. Try `pip3 install --user` instead.
+#8 0.634 Collecting flask (from -r requirements.txt (line 1))
+#8 1.083   Downloading https://files.pythonhosted.org/packages/cd/77/59df23681f4fd19b7cbbb5e92484d46ad587554f5d490f33ef907e456132/Flask-2.0.3-py3-none-any.whl (95kB)
+#8 1.223 Collecting flask-jsonpify (from -r requirements.txt (line 2))
+#8 1.405   Downloading https://files.pythonhosted.org/packages/60/0f/c389dea3988bffbe32c1a667989914b1cc0bce31b338c8da844d5e42b503/Flask-Jsonpify-1.5.0.tar.gz
+#8 1.743 Collecting flask-restful (from -r requirements.txt (line 3))
+#8 1.934   Downloading https://files.pythonhosted.org/packages/d7/7b/f0b45f0df7d2978e5ae51804bb5939b7897b2ace24306009da0cc34d8d1f/Flask_RESTful-0.3.10-py2.py3-none-any.whl
+#8 1.996 Collecting click>=7.1.2 (from flask->-r requirements.txt (line 1))
+#8 2.274   Downloading https://files.pythonhosted.org/packages/4a/a8/0b2ced25639fb20cc1c9784de90a8c25f9504a7f18cd8b5397bd61696d7d/click-8.0.4-py3-none-any.whl (97kB)
+#8 2.361 Collecting Werkzeug>=2.0 (from flask->-r requirements.txt (line 1))
+#8 2.589   Downloading https://files.pythonhosted.org/packages/f4/f3/22afbdb20cc4654b10c98043414a14057cd27fdba9d4ae61cea596000ba2/Werkzeug-2.0.3-py3-none-any.whl (289kB)
+#8 2.736 Collecting itsdangerous>=2.0 (from flask->-r requirements.txt (line 1))
+#8 2.927   Downloading https://files.pythonhosted.org/packages/9c/96/26f935afba9cd6140216da5add223a0c465b99d0f112b68a4ca426441019/itsdangerous-2.0.1-py3-none-any.whl
+#8 2.981 Collecting Jinja2>=3.0 (from flask->-r requirements.txt (line 1))
+#8 3.199   Downloading https://files.pythonhosted.org/packages/20/9a/e5d9ec41927401e41aea8af6d16e78b5e612bca4699d417f646a9610a076/Jinja2-3.0.3-py3-none-any.whl (133kB)
+#8 3.276 Collecting pytz (from flask-restful->-r requirements.txt (line 3))
+#8 3.625   Downloading https://files.pythonhosted.org/packages/32/4d/aaf7eff5deb402fd9a24a1449a8119f00d74ae9c2efa79f8ef9994261fc2/pytz-2023.3.post1-py2.py3-none-any.whl (502kB)
+#8 3.839 Collecting aniso8601>=0.82 (from flask-restful->-r requirements.txt (line 3))
+#8 4.025   Downloading https://files.pythonhosted.org/packages/e3/04/e97c12dc034791d7b504860acfcdd2963fa21ae61eaca1c9d31245f812c3/aniso8601-9.0.1-py2.py3-none-any.whl (52kB)
+#8 4.092 Collecting six>=1.3.0 (from flask-restful->-r requirements.txt (line 3))
+#8 4.278   Downloading https://files.pythonhosted.org/packages/d9/5a/e7c31adbe875f2abbb91bd84cf2dc52d792b5a01506781dbcf25c91daf11/six-1.16.0-py2.py3-none-any.whl
+#8 4.341 Collecting importlib-metadata; python_version < "3.8" (from click>=7.1.2->flask->-r requirements.txt (line 1))
+#8 4.613   Downloading https://files.pythonhosted.org/packages/a0/a1/b153a0a4caf7a7e3f15c2cd56c7702e2cf3d89b1b359d1f1c5e59d68f4ce/importlib_metadata-4.8.3-py3-none-any.whl
+#8 4.691 Collecting dataclasses; python_version < "3.7" (from Werkzeug>=2.0->flask->-r requirements.txt (line 1))
+#8 4.872   Downloading https://files.pythonhosted.org/packages/fe/ca/75fac5856ab5cfa51bbbcefa250182e50441074fdc3f803f6e76451fab43/dataclasses-0.8-py3-none-any.whl
+#8 4.926 Collecting MarkupSafe>=2.0 (from Jinja2>=3.0->flask->-r requirements.txt (line 1))
+#8 5.251   Downloading https://files.pythonhosted.org/packages/fc/d6/57f9a97e56447a1e340f8574836d3b636e2c14de304943836bd645fa9c7e/MarkupSafe-2.0.1-cp36-cp36m-manylinux1_x86_64.whl
+#8 5.307 Collecting typing-extensions>=3.6.4; python_version < "3.8" (from importlib-metadata; python_version < "3.8"->click>=7.1.2->flask->-r requirements.txt (line 1))
+#8 5.501   Downloading https://files.pythonhosted.org/packages/45/6b/44f7f8f1e110027cf88956b59f2fad776cca7e1704396d043f89effd3a0e/typing_extensions-4.1.1-py3-none-any.whl
+#8 5.555 Collecting zipp>=0.5 (from importlib-metadata; python_version < "3.8"->click>=7.1.2->flask->-r requirements.txt (line 1))
+#8 5.763   Downloading https://files.pythonhosted.org/packages/bd/df/d4a4974a3e3957fd1c1fa3082366d7fff6e428ddb55f074bf64876f8e8ad/zipp-3.6.0-py3-none-any.whl
+#8 5.806 Installing collected packages: typing-extensions, zipp, importlib-metadata, click, dataclasses, Werkzeug, itsdangerous, MarkupSafe, Jinja2, flask, flask-jsonpify, pytz, aniso8601, six, flask-restful
+#8 6.333   Running setup.py install for flask-jsonpify: started
+#8 6.597     Running setup.py install for flask-jsonpify: finished with status 'done'
+#8 6.950 Successfully installed Jinja2-3.0.3 MarkupSafe-2.0.1 Werkzeug-2.0.3 aniso8601-9.0.1 click-8.0.4 dataclasses-0.8 flask-2.0.3 flask-jsonpify-1.5.0 flask-restful-0.3.10 importlib-metadata-4.8.3 itsdangerous-2.0.1 pytz-2023.3.post1 six-1.16.0 typing-extensions-4.1.1 zipp-3.6.0
+#8 DONE 8.8s
+#9 [5/6] WORKDIR /python_api
+#9 DONE 0.3s
+#10 [6/6] COPY python-api.py python-api.py
+#10 DONE 0.5s
+#11 exporting to image
+#11 exporting layers
+#11 exporting layers 3.2s done
+#11 writing image sha256:aa148ba379c0441b4c09ac60cc4a5a315f9d236d962e192967a755f9abd3b2b6 0.0s done
+#11 naming to cr.yandex/crp2hc85uact046g650j/hello:gitlab-4eab1c8e 0.0s done
+#11 DONE 3.3s
+WARNING: buildx: git was not found in the system. Current commit information was not captured by the build
+$ docker push $CI_REGISTRY/crp2hc85uact046g650j/hello:gitlab-$CI_COMMIT_SHORT_SHA
+The push refers to repository [cr.yandex/crp2hc85uact046g650j/hello]
+9c3208e66e9e: Preparing
+130e1c725a50: Preparing
+c7708ddad7e3: Preparing
+a8127e9b59b2: Preparing
+2fe796049136: Preparing
+174f56854903: Preparing
+174f56854903: Waiting
+9c3208e66e9e: Pushed
+130e1c725a50: Pushed
+a8127e9b59b2: Pushed
+174f56854903: Layer already exists
+c7708ddad7e3: Pushed
+2fe796049136: Pushed
+gitlab-4eab1c8e: digest: sha256:0d00ba079194d3617be92dd298c08744a7f624344a47d9f11a007867cd6cbbb4 size: 1573
+Job succeeded

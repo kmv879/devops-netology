@@ -1,0 +1,16 @@
+stages:          
+  - build
+
+build-job:       
+  stage: build
+  variables:
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: "/certs"
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - echo "build and push image..."
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker build -t $CI_REGISTRY/crp2hc85uact046g650j/hello:gitlab-$CI_COMMIT_SHORT_SHA .
+    - docker push $CI_REGISTRY/crp2hc85uact046g650j/hello:gitlab-$CI_COMMIT_SHORT_SHA
