@@ -38,6 +38,7 @@ Runner создан и подключен.
 7. При комите в любую ветку должен собираться docker image с форматом имени hello:gitlab-$CI_COMMIT_SHORT_SHA . Образ должен быть выложен в Gitlab registry или yandex registry.   
 
 Создан [Dockerfile](./Dockerfile), файл [gitlab-ci.yml](./gitlab-ci.yml) и файл зависимостей [requirements.txt](./requirements.txt) 
+
 [Лог успешного выполнения пайплайна](./job_log.txt)
 
 При коммите собирается docker image  и выкладывается в yandex registry
