@@ -116,4 +116,4 @@ Chronograf запущен
 
 Выведены метрики docker.
 
-![Docker(./src/docker.png "Docker")
+![Docker](./src/docker.png "Docker")
