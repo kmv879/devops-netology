@@ -101,7 +101,7 @@ node_filesystem_free_bytes{fstype!~"tmpfs|fuse.lxcfs|squashfs|vfat"} / (1024 * 1
 1. Сохраните ваш Dashboard.Для этого перейдите в настройки Dashboard, выберите в боковом меню «JSON MODEL». Далее скопируйте отображаемое json-содержимое в отдельный файл и сохраните его.
 1. В качестве решения задания приведите листинг этого файла.
 
-Dashboar сохранен в файл [dashboard.json](./dashboard.json)
+Dashboard сохранен в файл [dashboard.json](./dashboard.json)
 
 ---
 
