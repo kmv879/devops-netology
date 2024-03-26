@@ -27,7 +27,9 @@ namespace/app created
 Созданы deployments и сервисы приложений
 
 [frontend](./frontend.yaml)
+
 [backend](./backend.yaml)
+
 [cache](./cache.yaml)
 
 ![Deployments](./src/1.png "Deployments")
@@ -35,7 +37,9 @@ namespace/app created
 Созданы политики
 
 [Политика по-умолчанию](./pol-default.yaml)
+
 [backend](./pol-backend.yaml)
+
 [cache](./pol-cache.yaml)
 
 ![Политики](./src/2.png "Политики")
