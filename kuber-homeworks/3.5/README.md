@@ -18,6 +18,7 @@ kubectl apply -f https://raw.githubusercontent.com/netology-code/kuber-homeworks
 3. Исправить проблему, описать, что сделано.
 4. Продемонстрировать, что проблема решена.
 
+### Ответ
 ```
 Error from server (NotFound): error when creating "https://raw.githubusercontent.com/netology-code/kuber-homeworks/main/3.5/files/task.yaml": namespaces "data" not found
 ```
