@@ -20,7 +20,9 @@ kubectl apply -f https://raw.githubusercontent.com/netology-code/kuber-homeworks
 
 ### Ответ
 ```
+Error from server (NotFound): error when creating "https://raw.githubusercontent.com/netology-code/kuber-homeworks/main/3.5/files/task.yaml": namespaces "web" not found
 Error from server (NotFound): error when creating "https://raw.githubusercontent.com/netology-code/kuber-homeworks/main/3.5/files/task.yaml": namespaces "data" not found
+
 ```
 
 Отсутствуют namespace data и web
