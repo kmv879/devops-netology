@@ -161,7 +161,7 @@ spec:
 
 
 ---
-## Подготовка cистемы мониторинга и деплой приложения
+## Подготовка cистемы мониторинга и разворачивание приложения
 
    1. Для разворачивания мониторинга воспользуемся helm [чартом](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack)
 
@@ -176,7 +176,7 @@ helm install prometheus-stack  prometheus-community/kube-prometheus-stack
 ![Мониторинг](./src/6.png)
 
 
-   3. Создадим манифест серсива NodePort для Grafana
+   3. Создадим манифест сервиса NodePort для Grafana
 
 ```
 ---
@@ -203,123 +203,37 @@ spec:
 
 ![Grafana](./src/7.png)
 
+![Приложение](./src/8.png)
+
 
 ---
-<details><summary>Установка и настройка CI/CD</summary>
-   Для создания пайплайна для сборки и деплоя приложения выбран GitHub Actions.
+## Установка и настройка CI/CD
 
-   [Ссылка на репозиторий](https://github.com/A1yoshQa/app.git)
+   Для создания пайплайна для сборки и разворачивания приложения выбран GitHub Actions.
 
-   1. [Ссылка манифест ci/cd](https://github.com/A1yoshQa/app/blob/main/.github/workflows/blank.yml) 
-   2. Секреты и прочие переменные используемые в сборке создаются в веб интерфейсе графаны
-![ScreenShot](./img/Screenshot_4.jpg)
-   3. В процессе сборки образ создаётся на основе [Dockerfile](https://github.com/A1yoshQa/app/blob/main/Dockerfile) представленного раннее, деплой осуществляется путём создания объектов кубера в клстере на основе манифестов [deployment.yaml](https://github.com/A1yoshQa/app/blob/main/kuber/deployment.yaml) и [service.yaml](https://github.com/A1yoshQa/app/blob/main/kuber/service.yaml).
-   4. Сам манифест сборки предстален ниже, и также расположен по стандартному пути /.github/workflows
-```
-name: CI-build_and_deploy-site
+   [Репозиторий](https://github.com/kmv879/app.git)
 
-env:
-  IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/my-kuber-app
-  TAG: ${{ github.run_number }}
-  FILE_TAG: ./environments/value_tag
-  VARS_APP_REPO: ${{ vars.APP_REPO }}
-  REPO_DIR: app
-  
-on:
-  push:
-    branches:
-    - main
-    tags:
-    - '*'
-    
-jobs:
+   1. [Ссылка манифест ci/cd](https://github.com/kmv879/app/blob/main/.github/workflows/main.yml) 
+   
+   2. Секреты и переменные создаются в веб интерфейсе github
+   
+![Секреты](./src/9.png)
 
-  build:
-    outputs:
-      image_tag: ${{ env.TAG }}
-    runs-on: ubuntu-latest
-
-    steps:
-    
-    - name: Get files
-      uses: actions/checkout@v3
-
-    - name: Set env TAG
-      id: step_tag
-      run: echo "TAG=$(echo ${GITHUB_REF:10})" >> $GITHUB_ENV
-      if: startsWith(github.ref, 'refs/tags/v')
-      
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag ${{ env.IMAGE_NAME }}:${{ env.TAG }}
-    
-    - name: Push the Docker image
-      run: |
-        docker login --username ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }}
-        docker push ${{ env.IMAGE_NAME }}:${{ env.TAG }}
+   3. В процессе сборки образ создаётся на основе [Dockerfile](https://github.com/kmv879/app/blob/main/Dockerfile)
+   
 
 
-  deploy: 
-    
-    needs: build
-    runs-on: ubuntu-latest
+   4. При коммите без тега собирается только образ.
+   
+   ![Commit](./src/10.png)
+   
+   ![Job](./src/11.png)
 
-    steps:
-
-    - name: Update application
-      env:
-        tag: ${{ needs.build.outputs.image_tag }}
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
-        port: ${{ secrets.SSH_PORT }}
-        script: |
-          sudo su 
-          sudo apt install git -y
-          kubectl delete  -f .app/kuber/deployment.yaml
-          kubectl delete -f .app/kuber/service.yaml
-          rm -rf ./${{ env.REPO_DIR}}
-          git clone ${{ env.VARS_APP_REPO }} ./${{ env.REPO_DIR}}
-          cd ./${{ env.REPO_DIR}}
-          sed -i "s|{{image_tag}}|${{ env.tag }}|g" ./kuber/deployment.yaml
-          sudo kubectl apply -f ./kuber/deployment.yaml
-          sudo kubectl apply -f ./kuber/service.yaml
-          sudo kubectl get po,svc | grep my-kuber-app
-```
-
-   5. Немного персонализируем наш сайт и выполним пуш комита.
-
-```
-root@my-ubuntu:/home/alyoshqa/app# git add .
-root@my-ubuntu:/home/alyoshqa/app# git commit -m "add my name"
-[main 0497eb7] add my name
- 1 file changed, 2 insertions(+), 2 deletions(-)
-root@my-ubuntu:/home/alyoshqa/app# git push -u origin
-Enumerating objects: 7, done.
-Counting objects: 100% (7/7), done.
-Delta compression using up to 4 threads
-Compressing objects: 100% (4/4), done.
-Writing objects: 100% (4/4), 401 bytes | 401.00 KiB/s, done.
-Total 4 (delta 3), reused 0 (delta 0), pack-reused 0
-remote: Resolving deltas: 100% (3/3), completed with 3 local objects.
-To https://github.com/A1yoshQa/app.git
-   247522a..0497eb7  main -> main
-Branch 'main' set up to track remote branch 'main' from 'origin'.
-```
-
-   6. Проверим статус сборки
-![ScreenShot](./img/Screenshot_5.jpg)
-сборка прошла успешно
-
-   7. Проверим обновилась ли статика нашего сайта
-   ![ScreenShot](./img/Screenshot_7.jpg)
-   ![ScreenShot](./img/Screenshot_6.jpg)
-   успешно
-
-
-
-</details>
+   4. При коммите с тегом также разворачивается новая версия приложения.
+   
+   ![Commit](./src/12.png)
+   
+   ![Job](./src/13.png)
 
 ---
 ## Материалы необходимые для сдачи задания
