@@ -109,7 +109,11 @@ $ ansible-playbook -i inventory/my-k8s-cluster/hosts.yml --become --become-user=
    1.  [Dockerfile](https://github.com/kmv879/app/blob/main/Dockerfile)
    2.  [Конфиг nginx](https://github.com/kmv879/app/blob/main/nginx/app.conf)
    3.  [DockerHub](https://hub.docker.com/repository/docker/kmv879/my-app/general) 
+   
+   
    ![Dockerhub](./src/5.png)
+   
+   
    4. Для развертывания приложения в кластере созданы файлы deployment.yml, service.yml.
 
 ```
@@ -157,7 +161,7 @@ spec:
 
 
 ---
-<details><summary>Подготовка cистемы мониторинга и деплой приложения</summary>
+## Подготовка cистемы мониторинга и деплой приложения
 
    1. Для разворачивания мониторинга воспользуемся helm [чартом](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack)
 
@@ -168,21 +172,9 @@ helm install prometheus-stack  prometheus-community/kube-prometheus-stack
 ```
    2. Проверим поднятие мониторинга
 
-```
-root@my-ubuntu:/home/alyoshqa# kubectl get svc -w
-NAME                                        TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
-alertmanager-operated                       ClusterIP   None            <none>        9093/TCP,9094/TCP,9094/UDP   2d23h
-grafana                                     NodePort    10.233.24.218   <none>        3000:30902/TCP               2d23h
-kubernetes                                  ClusterIP   10.233.0.1      <none>        443/TCP                      3d
-my-kuber-app-svc                            NodePort    10.233.14.116   <none>        80:30903/TCP                 11h
-prometheus-operated                         ClusterIP   None            <none>        9090/TCP                     2d23h
-prometheus-stack-grafana                    ClusterIP   10.233.8.150    <none>        80/TCP                       2d23h
-prometheus-stack-kube-prom-alertmanager     ClusterIP   10.233.17.151   <none>        9093/TCP,8080/TCP            2d23h
-prometheus-stack-kube-prom-operator         ClusterIP   10.233.3.97     <none>        443/TCP                      2d23h
-prometheus-stack-kube-prom-prometheus       ClusterIP   10.233.15.234   <none>        9090/TCP,8080/TCP            2d23h
-prometheus-stack-kube-state-metrics         ClusterIP   10.233.63.159   <none>        8080/TCP                     2d23h
-prometheus-stack-prometheus-node-exporter   ClusterIP   10.233.27.68    <none>        9100/TCP                     2d23h
-```
+
+![Мониторинг](./src/6.png)
+
 
    3. Создадим манифест серсива NodePort для Grafana
 
@@ -203,87 +195,13 @@ spec:
       targetPort: 3000
 ```
 
-   4. Для доступа извне добавим блок терраформа с сетевым балансировщиком для апп и графаны.
-
-```
-resource "yandex_lb_target_group" "nlb-group-grafana" {
-
-  name       = "nlb-group-grafana"
-  depends_on = [yandex_compute_instance_group.k8s-node-group]
-
-  dynamic "target" {
-    for_each = yandex_compute_instance_group.k8s-node-group.instances
-    content {
-      subnet_id = target.value.network_interface.0.subnet_id
-      address   = target.value.network_interface.0.ip_address
-    }
-  }
-}
-
-resource "yandex_lb_network_load_balancer" "nlb-graf" {
-
-  name = "nlb-grafana"
-
-  listener {
-    name        = "grafana-listener"
-    port        = 3000
-    target_port = 30902
-    external_address_spec {
-      ip_version = "ipv4"
-    }
-  }
-
-  attached_target_group {
-    target_group_id = yandex_lb_target_group.nlb-group-grafana.id
-
-    healthcheck {
-      name = "healthcheck"
-      tcp_options {
-        port = 30902
-      }
-    }
-  }
-  depends_on = [yandex_lb_target_group.nlb-group-grafana]
-}
-
-resource "yandex_lb_network_load_balancer" "nlb-appl" {
-
-  name = "nlb-my-k8s-app"
-
-  listener {
-    name        = "app-listener"
-    port        = 80
-    target_port = 30903
-    external_address_spec {
-      ip_version = "ipv4"
-    }
-  }
-
-  attached_target_group {
-    target_group_id = yandex_lb_target_group.nlb-group-grafana.id
-
-    healthcheck {
-      name = "healthcheck"
-      tcp_options {
-        port = 30903
-      }
-    }
-  }
-  depends_on = [yandex_lb_target_group.nlb-group-grafana]
-}
-```
+   4. Для доступа через внешний адрес  добавим конфигурацию терраформа с балансировщиком для приложения и графаны.
+      
+   [конфигурация](./terraform/nlb.tf)
 
    5. Проверим доступность
 
-![ScreenShot](./img/Screenshot_2.jpg)
-![ScreenShot](./img/Screenshot_3.jpg)
-
-   [ССЫЛКА НА ГРАФАНУ](http://158.160.133.94:3000/) 
-
-   [ССЫЛКА НА САЙТ](http://158.160.146.168/) (внешний Ip loadbalancer'а раскидывающий трафик по 3 воркерам)
-
-
-</details>
+![Grafana](./src/7.png)
 
 
 ---
