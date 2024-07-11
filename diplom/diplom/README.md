@@ -27,11 +27,11 @@
 
 ## Создание облачной инфраструктуры
 
-   1. Создан сервисный аккаунт и подготовлен бакет для хранения стейт файлов terraform. [конфиг](./terraform/bucket/bucket.tf).
+   1. Создан сервисный аккаунт и подготовлен бакет для хранения стейт файлов terraform. [конфигурация](./terraform/bucket/bucket.tf).
    
    ![Bucket](./src/1.png "Bucket")
    
-   2. Создание VPC с подсетями в разных зонах доступности [конфиг](./terraform/networks.tf)
+   2. Создание VPC с подсетями в разных зонах доступности [конфигурация](./terraform/networks.tf)
    
    ![Subnets](./src/2.png "Subnets")
    
@@ -102,34 +102,35 @@ $ ansible-playbook -i inventory/my-k8s-cluster/hosts.yml --become --become-user=
 
 
 ---
-<details><summary>Создание тестового приложения</summary>
+## Создание тестового приложения<
 
-Создадим докер-образ на основе **nginx**, отдающим страницу-портфолио. [Репозиторий с исходниками](https://github.com/A1yoshQa/app.git).
+Докер-образ создан  основе nginx. [Репозиторий](https://github.com/kmv879/app).
 
-   1.  [Dockerfile](https://github.com/A1yoshQa/app/blob/main/Dockerfile)
-   2.  [Конфиг nginx](https://github.com/A1yoshQa/app/blob/main/nginx/app.conf)
-   3.  В качесиве регистри был использован [DockerHub](https://hub.docker.com/repository/docker/a1yoshqa/my-kuber-app/general) 
-   ![ScreenShot](./img/Screenshot_1.jpg)
+   1.  [Dockerfile](https://github.com/kmv879/app/blob/main/Dockerfile)
+   2.  [Конфиг nginx](https://github.com/kmv879/app/blob/main/nginx/app.conf)
+   3.  [DockerHub](https://hub.docker.com/repository/docker/kmv879/my-app/general) 
+   ![Dockerhub](./src/5.png)
    4. Для развертывания приложения в кластере созданы файлы deployment.yml, service.yml.
+
 ```
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: my-kuber-app
+  name: my-app
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: my-kuber-app
+      app: my-app
   template:
     metadata:
       labels:
-        app: my-kuber-app
+        app: my-app
     spec:
       containers:
-        - name: my-kuber-app
-          image: a1yoshqa/my-kuber-app:{{image_tag}}
+        - name: my-app
+          image: kmv879/my-app:{{image_tag}}
           ports:
             - name: http
               containerPort: 80
@@ -141,36 +142,18 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: my-kuber-app-svc
+  name: my-app-svc
 spec:
   type: NodePort
   selector:
-    app: my-kuber-app
+    app: my-app
   ports:
     - name: web
       nodePort: 30903
       port: 80
       targetPort: 80
 ```
-   5. В конфигурацию терраформа был добавлен код сетевого балансировщика для приложения
-```
-resource "yandex_lb_network_load_balancer" "nlb-my-k8s-app" {
 
-  name = "nlb-my-k8s-app"
-
-  listener {
-    name        = "app-listener"
-    port        = 80
-    target_port = 30903
-    external_address_spec {
-      ip_version = "ipv4"
-    }
-  }
-```
-
-
-
-</details>
 
 
 ---
