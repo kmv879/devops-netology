@@ -423,13 +423,10 @@ Branch 'main' set up to track remote branch 'main' from 'origin'.
 ---
 ## Материалы необходимые для сдачи задания
 
-1. [Репозиторий с конфигурационными файлами Terraform](https://github.com/A1yoshQa/netology/tree/main/diplom/terraform).
-2. [Репозиторий с конфигурацией kubespray](https://github.com/kubernetes-sigs/kubespray).
-3. [Репозиторий с Dockerfile тестового приложения](https://github.com/A1yoshQa/app.git) и [ссылка на собранный docker image](https://hub.docker.com/repository/docker/a1yoshqa/my-kuber-app/general).
-4. [Успешная джоба](https://github.com/A1yoshQa/app/actions/runs/9436664803) 
-5. [Ссылка на тестовое приложение](http://158.160.146.168/) и [веб интерфейс Grafana](http://158.160.133.94:3000/) с данными доступа.
-
+1. [Репозиторий с конфигурационными файлами Terraform](https://github.com/kmv879/devops-netology/tree/main/diplom/diplom/terraform).
+2. [Репозиторий с Dockerfile тестового приложения](https://github.com/kmv879/app) и [ссылка на собранный docker image](https://hub.docker.com/repository/docker/kmv879/my-app/general).
+3. [Ссылка на тестовое приложение](http://158.160.175.97/) и [веб интерфейс Grafana](http://158.160.175.154:3000) с данными доступа:
    - login admin
-   - pass yourNewPasswordHere
+   - pass prom-operator
 
 
