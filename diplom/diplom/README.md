@@ -226,7 +226,7 @@ spec:
 
 1. [Репозиторий с конфигурационными файлами Terraform](https://github.com/kmv879/devops-netology/tree/main/diplom/diplom/terraform).
 2. [Репозиторий с Dockerfile тестового приложения](https://github.com/kmv879/app) и [ссылка на собранный docker image](https://hub.docker.com/repository/docker/kmv879/my-app/general).
-3. [Ссылка на тестовое приложение](http://158.160.175.97/) и [веб интерфейс Grafana](http://158.160.175.154:3000) с данными доступа:
+3. [Ссылка на тестовое приложение](http://51.250.6.0:30903/) и [веб интерфейс Grafana](http://51.250.6.0:30902) с данными доступа:
    - login admin
    - pass prom-operator
 
